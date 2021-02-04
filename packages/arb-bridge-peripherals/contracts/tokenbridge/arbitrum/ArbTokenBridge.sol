@@ -53,10 +53,11 @@ contract ArbTokenBridge is CloneFactory {
         address l1ERC20,
         address account,
         uint256 amount,
+        bytes calldata extraData,
         uint8 decimals
     ) external onlyEthPair {
         IArbToken token = ensureTokenExists(l1ERC20, decimals);
-        token.bridgeMint(account, amount);
+        token.bridgeMint(account, amount, extraData);
     }
 
     function mintERC20FromL1(
@@ -66,7 +67,7 @@ contract ArbTokenBridge is CloneFactory {
         uint8 decimals
     ) external onlyEthPair {
         IArbToken token = ensureERC20TokenExists(l1ERC20, decimals);
-        token.bridgeMint(account, amount);
+        token.bridgeMint(account, amount, '');
     }
 
     function updateERC777TokenInfo(
@@ -111,14 +112,20 @@ contract ArbTokenBridge is CloneFactory {
         exitNum++;
     }
 
-    function migrate(address l1ERC20, address target, address account, uint256 amount) external {
+    function migrate(
+        address l1ERC20,
+        address target,
+        address account,
+        uint256 amount,
+        bytes calldata extraData
+    ) external {
         address bridgedERC777 = calculateBridgedERC777Address(l1ERC20);
         address bridgedERC20 = calculateBridgedERC20Address(l1ERC20);
 
         require(msg.sender == bridgedERC777 || msg.sender == bridgedERC20, "NOT_FROM_TOKEN");
         require(target == bridgedERC777 || target == bridgedERC20 || target == customToken[l1ERC20], "NOT_TO_TOKEN");
 
-        IArbToken(target).bridgeMint(account, amount);
+        IArbToken(target).bridgeMint(account, amount, extraData);
     }
 
     function calculateBridgedERC777Address(address l1ERC20) public view returns (address) {

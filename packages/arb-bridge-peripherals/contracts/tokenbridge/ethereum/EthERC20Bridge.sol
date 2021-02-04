@@ -136,6 +136,7 @@ contract EthERC20Bridge is L1Buddy {
         address erc20,
         address destination,
         uint256 amount,
+        bytes calldata extraData,
         uint256 maxGas,
         uint256 gasPriceBid
     ) external payable onlyIfConnected {
@@ -150,6 +151,7 @@ contract EthERC20Bridge is L1Buddy {
                 erc20,
                 destination,
                 amount,
+                extraData,
                 decimals
             )
         );

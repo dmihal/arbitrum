@@ -36,8 +36,8 @@ contract StandardArbERC777 is ERC777, Cloneable, IArbToken {
         }
     }
 
-    function bridgeMint(address account, uint256 amount) external override onlyBridge {
-        _mint(account, DecimalConverter.from20to777(l1Decimals, amount), '', '');
+    function bridgeMint(address account, uint256 amount, bytes calldata extraData) external override onlyBridge {
+        _mint(account, DecimalConverter.from20to777(l1Decimals, amount), extraData, '');
     }
 
     function withdraw(address destination, uint256 amount) external {
@@ -45,8 +45,8 @@ contract StandardArbERC777 is ERC777, Cloneable, IArbToken {
         bridge.withdraw(l1Address, destination, DecimalConverter.from777to20(l1Decimals, amount));
     }
 
-    function migrate(address target, uint256 amount) external {
+    function migrate(uint256 amount, address target, bytes calldata extraData) external {
         _burn(msg.sender, amount, '', '');
-        bridge.migrate(l1Address, target, msg.sender, amount);
+        bridge.migrate(l1Address, target, msg.sender, amount, extraData);
     }
 }
